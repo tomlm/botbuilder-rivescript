@@ -1,0 +1,9 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/dotnet/.vs
+/dotnet/Bot.Builder.Rivescript/bin
+/dotnet/Bot.Builder.Rivescript/obj
+/dotnet/Bot.Builder.Rivescript.tests/bin
+/dotnet/Bot.Builder.Rivescript.tests/obj
