@@ -1,23 +1,24 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>4.0.3-alpha</Version>
-    <FileVersion>4.0.3.0</FileVersion>
-    <AssemblyVersion>4.0.3.0</AssemblyVersion>
+    <Version>4.0.0</Version>
+    <FileVersion>4.0.0.0</FileVersion>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Company>Microsoft</Company>
-    <Authors>Microsoft</Authors>
-    <Product>Microsoft Bot Builder SDK</Product>
-    <Description>Classes for using Rivescript to build conversation on the Microsoft Bot Builder SDK</Description>
-    <PackageId>Microsoft.Bot.Builder.Rivescript</PackageId>
-    <Copyright>Microsoft</Copyright>
-    <PackageProjectUrl>http://botframework.com</PackageProjectUrl>
+    <Company></Company>
+    <Authors>Tom Laird-McConnell</Authors>
+    <Product></Product>
+    <Description>Dialog Class for using Rivescript to script chit chat conversation the Microsoft Bot Builder V4 SDK</Description>
+    <PackageId>Bot.Builder.Rivescript</PackageId>
+    <Copyright></Copyright>
+    <PackageProjectUrl>https://github.com/tomlm/BotBuilder-rivescript</PackageProjectUrl>
     <PackageIconUrl>http://docs.botframework.com/images/bot_icon.png</PackageIconUrl>
-    <RepositoryUrl>https://github.com/Microsoft/BotBuilder</RepositoryUrl>
+    <RepositoryUrl>https://github.com/tomlm/BotBuilder-rivescript</RepositoryUrl>
     <RepositoryType />
     <PackageTags>bots;ai;botframework;botbuilder</PackageTags>
     <NeutralLanguage />
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -25,8 +26,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Bot.Builder.Core" Version="4.0.1-preview" />
-    <PackageReference Include="Microsoft.Bot.Builder.Core.Extensions" Version="4.0.1-preview" />
+    <PackageReference Include="Microsoft.Bot.Builder" Version="4.0.0.39259" />
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.0.0.39259" />
     <PackageReference Include="Rivescript.CSharp" Version="0.1.4" />
   </ItemGroup>
 

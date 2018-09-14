@@ -1,6 +1,5 @@
 ﻿using Bot.Builder.Rivescript;
 using Microsoft.Bot.Builder.Adapters;
-using Microsoft.Bot.Builder.Core.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading.Tasks;
@@ -12,7 +11,7 @@ namespace Microsoft.Bot.Builder.Rivescript.Tests
     [TestCategory("Middleware")]
     [TestCategory("RiveScript")]
     [TestCategory("RiveScript - State")]
-    public class Middleware_RivescriptStateTests
+    public class RiveScriptDialog_StateTests
     {
         [TestCleanup]
         public void Cleanup()
@@ -20,8 +19,9 @@ namespace Microsoft.Bot.Builder.Rivescript.Tests
             CleanupTempFiles();
         }
 
+
         [TestMethod]
-        public async Task Middleware_Rivescript_StateFromBotToRivescript()
+        public async Task RivescriptDialog_StateFromBotToRivescript()
         {
             string name = Guid.NewGuid().ToString();
 
@@ -31,21 +31,27 @@ namespace Microsoft.Bot.Builder.Rivescript.Tests
                            +hello bot
                            -Test <get name>");
 
-            var adapter = new TestAdapter()
-                .Use(new ConversationState<RivescriptState>(new MemoryStorage()))
-                .Use(new InjectState((context) => {
-                    var dict = RivescriptMiddleware.StateDictionary(context);
-                    dict["name"] = name; 
-                }))
-                .Use(new RivescriptMiddleware(fileName));
 
-            await new TestFlow(adapter)
-                .Send("Hello bot").AssertReply("Test " + name)
-                .StartTest();
+            var conversationState = new ConversationState(new MemoryStorage());
+            var bot = new TestBot(conversationState, fileName);
+
+            var adapter = new TestAdapter()
+                .Use(new AutoSaveStateMiddleware(conversationState))
+                .Use(new InjectState(async (context) =>
+                    {
+                        var dict = await bot.RivescriptDialog.StateProperty.GetAsync(context, () => new RivescriptState());
+                        dict["name"] = name;
+                    })
+                );
+
+            await new TestFlow(adapter, (turnContext, cancellationToken) => bot.OnTurnAsync(turnContext, cancellationToken))
+                .Send("Hello bot")
+                .AssertReply("Test " + name)
+                .StartTestAsync();
         }
 
         [TestMethod]
-        public async Task Middleware_Rivescript_StateFromRivescriptToBot()
+        public async Task RivescriptDialog_StateFromRivescriptToBot()
         {
             //Note: The dictionary coming back from the C# Rivescript implementation
             // eats the "-" in a GUID. This means if we send in "abcde-12345" we get
@@ -53,7 +59,7 @@ namespace Microsoft.Bot.Builder.Rivescript.Tests
             // Rivescript implementation, and not caused by the BotBuilder Middleware.                         
             // To work around this, this test - which is just testing the BotBuilder 
             // code - doesn't use any "-". 
-            string uglyGuid = Guid.NewGuid().ToString("N"); 
+            string uglyGuid = Guid.NewGuid().ToString("N");
             bool validationRan = false;
 
             string fileName = CreateTempFile(
@@ -62,12 +68,14 @@ namespace Microsoft.Bot.Builder.Rivescript.Tests
                            + value is *
                            - <set test=<star>>value is <get test>");
 
+            var conversationState = new ConversationState(new MemoryStorage());
+            var bot = new TestBot(conversationState, fileName);
+
             var adapter = new TestAdapter()
-                .Use(new ConversationState<RivescriptState>(new MemoryStorage()))
-                .Use(new RivescriptMiddleware(fileName))
-                .Use(new ValidateState((context) =>
+                .Use(new AutoSaveStateMiddleware(conversationState))
+                .Use(new ValidateState(async (context) =>
                     {
-                        var dict = RivescriptMiddleware.StateDictionary(context); 
+                        var dict = await bot.RivescriptDialog.StateProperty.GetAsync(context, () => new RivescriptState());
                         Assert.IsTrue(
                             dict["test"] == uglyGuid,
                             $"Incorrect value. Expected '{uglyGuid}', found '{dict["test"]}'");
@@ -75,9 +83,10 @@ namespace Microsoft.Bot.Builder.Rivescript.Tests
                     })
                 );
 
-            await new TestFlow(adapter)
-                .Send("value is " + uglyGuid).AssertReply("value is " + uglyGuid)
-                .StartTest();
+            await new TestFlow(adapter, (turnContext, cancellationToken) => bot.OnTurnAsync(turnContext, cancellationToken))
+                .Send("value is " + uglyGuid)
+                    .AssertReply("value is " + uglyGuid)
+                .StartTestAsync();
 
             // Make sure the state validator actually ran. 
             Assert.IsTrue(validationRan, "The State Validator did not run");

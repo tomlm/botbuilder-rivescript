@@ -1,0 +1,35 @@
+{
+  "name": "botbuilder-rivescript",
+  "author": "Microsoft Corp.",
+  "description": "rivescript adapter for bot builder",
+  "version": "4.0.0",
+  "license": "MIT",
+  "keywords": [
+    "botbuilder",
+    "botframework",
+    "bots",
+    "chatbots",
+    "rivescript"
+  ],
+  "bugs": {
+    "url": "https://github.com/Microsoft/BotBuilder/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/BotBuilder.git"
+  },
+  "main": "./lib/rivescript.js",
+  "typings": "./lib/rivescript.d.ts",
+  "dependencies": {
+    "@types/node": "^8.0.11",
+    "botbuilder": "^4.0.0-preview1.1382 ",
+    "botbuilder-dialogs": "^4.0.0-preview1.1382 ",
+    "rivescript": "^1.19.0"
+  },
+  "devDependencies": {
+    "mocha": "^4.0.1"
+  },
+  "scripts": {
+    "test": "mocha tests/*.js"
+  }
+}

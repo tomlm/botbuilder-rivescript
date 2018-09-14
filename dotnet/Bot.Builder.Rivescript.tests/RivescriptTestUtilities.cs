@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Bot.Builder.Rivescript;
-using Microsoft.Bot.Builder.Core.Extensions;
+using System.Threading;
 
 namespace Microsoft.Bot.Builder.Rivescript.Tests
 {
@@ -21,11 +21,10 @@ namespace Microsoft.Bot.Builder.Rivescript.Tests
             _action = action;
         }
 
-        public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
+        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
         {
-
-            _action(context);
-            await next();
+            _action(turnContext);
+            await next(cancellationToken);
         }
     }
 
@@ -42,10 +41,11 @@ namespace Microsoft.Bot.Builder.Rivescript.Tests
             _action = action;
         }
 
-        public async Task OnTurn(ITurnContext context, MiddlewareSet.NextDelegate next)
+
+        public async Task OnTurnAsync(ITurnContext turnContext, NextDelegate next, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await next();
-            _action(context);
+            await next(cancellationToken);
+            _action(turnContext);
         }
     }
 
@@ -61,14 +61,7 @@ namespace Microsoft.Bot.Builder.Rivescript.Tests
 
             return tempFile;
         }
-        public static TestAdapter CreateSimpleRivescriptBot(string fileName)
-        {
-            var adapter = new TestAdapter()
-                .Use(new ConversationState<RivescriptState>(new MemoryStorage()))
-                .Use(new RivescriptMiddleware(fileName));
 
-            return adapter;
-        }
         public static void CleanupTempFiles()
         {
             foreach (string fileName in tempFileNames)
